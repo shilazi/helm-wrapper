@@ -105,6 +105,8 @@ func main() {
 		Handler: router,
 	}
 
+	glog.Infof("listen: %s", srv.Addr)
+
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			glog.Fatalf("listen: %s\n", err)
