@@ -241,7 +241,7 @@ func showReleaseInfo(c *gin.Context) {
 		respErr(c, fmt.Errorf("bad info %s, release info only support hooks/manifest/notes/values", info))
 		return
 	}
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, c))
 	if err != nil {
 		respErr(c, err)
 		return
@@ -325,7 +325,7 @@ func installRelease(c *gin.Context) {
 		return
 	}
 
-	if err = runInstall(name, namespace, kubeContext, aimChart, kubeConfig, options); err != nil {
+	if err = runInstall(name, namespace, kubeContext, aimChart, kubeConfig, c, options); err != nil {
 		respErr(c, err)
 		return
 	}
@@ -334,13 +334,13 @@ func installRelease(c *gin.Context) {
 	return
 }
 
-func runInstall(name, namespace, kubeContext, aimChart, kubeConfig string, options releaseOptions) (err error) {
+func runInstall(name, namespace, kubeContext, aimChart, kubeConfig string, ginContext *gin.Context, options releaseOptions) (err error) {
 	vals, err := mergeValues(options)
 	if err != nil {
 		return
 	}
 
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, ginContext))
 	if err != nil {
 		return
 	}
@@ -428,7 +428,7 @@ func uninstallRelease(c *gin.Context) {
 	kubeContext := c.Query("kube_context")
 	kubeConfig := c.Query("kube_config")
 
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, c))
 	if err != nil {
 		respErr(c, err)
 		return
@@ -463,7 +463,7 @@ func rollbackRelease(c *gin.Context) {
 		return
 	}
 
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, c))
 	if err != nil {
 		respErr(c, err)
 		return
@@ -518,7 +518,7 @@ func upgradeRelease(c *gin.Context) {
 		respErr(c, err)
 		return
 	}
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, c))
 	if err != nil {
 		respErr(c, err)
 		return
@@ -576,7 +576,7 @@ func upgradeRelease(c *gin.Context) {
 		hisClient := action.NewHistory(actionConfig)
 		hisClient.Max = 1
 		if _, err := hisClient.Run(name); err == driver.ErrReleaseNotFound {
-			err = runInstall(name, namespace, kubeContext, aimChart, kubeConfig, options)
+			err = runInstall(name, namespace, kubeContext, aimChart, kubeConfig, c, options)
 			if err != nil {
 				respErr(c, err)
 				return
@@ -610,7 +610,7 @@ func listReleases(c *gin.Context) {
 		respErr(c, err)
 		return
 	}
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, c))
 	if err != nil {
 		respErr(c, err)
 		return
@@ -662,7 +662,7 @@ func getReleaseStatus(c *gin.Context) {
 	kubeContext := c.Query("kube_context")
 	kubeConfig := c.Query("kube_config")
 
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, c))
 	if err != nil {
 		respErr(c, err)
 		return
@@ -685,7 +685,7 @@ func listReleaseHistories(c *gin.Context) {
 	kubeContext := c.Query("kube_context")
 	kubeConfig := c.Query("kube_config")
 
-	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig))
+	actionConfig, err := actionConfigInit(InitKubeInformation(namespace, kubeContext, kubeConfig, c))
 	if err != nil {
 		respErr(c, err)
 		return
