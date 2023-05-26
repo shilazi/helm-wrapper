@@ -1,6 +1,6 @@
 # A [Helm3](https://github.com/helm/helm) HTTP Wrapper With Go SDK
 
-Helm3 摒弃了 Helm2 的 Tiller 架构，使用纯命令行的方式执行相关操作。如果想通过 Helm API 来实现相关功能，很遗憾官方并没有提供类似的服务。不过，因为官方提供了相对友好的 [Helm Go SDK](https://helm.sh/docs/topics/advanced/)，我们只需在此基础上做封装即可实现。[helm-wrapper](https://github.com/opskumu/helm-wrapper) 就是这样一个通过 Go [Gin](https://github.com/gin-gonic/gin) Web 框架，结合 Helm Go SDK 封装的 HTTP Server，让 Helm 相关的日常命令操作可以通过 Restful API 的方式来实现同样的操作。
+Helm3 摒弃了 Helm2 的 Tiller 架构，使用纯命令行的方式执行相关操作。如果想通过 Helm API 来实现相关功能，很遗憾官方并没有提供类似的服务。不过，因为官方提供了相对友好的 [Helm Go SDK](https://helm.sh/docs/topics/advanced/)，我们只需在此基础上做封装即可实现。[helm-wrapper](https://github.com/shilazi/helm-wrapper) 就是这样一个通过 Go [Gin](https://github.com/gin-gonic/gin) Web 框架，结合 Helm Go SDK 封装的 HTTP Server，让 Helm 相关的日常命令操作可以通过 Restful API 的方式来实现同样的操作。
 
 ## Support API
 

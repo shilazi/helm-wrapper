@@ -1,4 +1,4 @@
-module github.com/opskumu/helm-wrapper
+module github.com/shilazi/helm-wrapper
 
 go 1.20
 
