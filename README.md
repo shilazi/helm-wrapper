@@ -249,10 +249,10 @@ pflag: help requested
 
 ```
 $ cat config-example.yaml
-uploadPath: /tmp/charts
+uploadPath: /data/charts
 helmRepos:
-  - name: bitnami
-    url: https://charts.bitnami.com/bitnami
+- name: bitnami
+  url: https://charts.bitnami.com/bitnami
 ```
 
 + `--kubeconfig` default kubeconfig path is `~/.kube/config`.About `kubeconfig`, you can see [Configure Access to Multiple Clusters](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).

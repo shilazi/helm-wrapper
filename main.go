@@ -27,7 +27,7 @@ type HelmConfig struct {
 
 var (
 	settings          = cli.New()
-	defaultUploadPath = "/tmp/charts"
+	defaultUploadPath = "/data/charts"
 	helmConfig        = &HelmConfig{}
 )
 

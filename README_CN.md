@@ -253,10 +253,10 @@ pflag: help requested
 
 ```
 $ cat config-example.yaml
-uploadPath: /tmp/charts
+uploadPath: /data/charts
 helmRepos:
-  - name: bitnami
-    url: https://charts.bitnami.com/bitnami
+- name: bitnami
+  url: https://charts.bitnami.com/bitnami
 ```
 + `--kubeconfig` 默认如果你不指定的话，使用默认的路径，一般是 `~/.kube/config`。这个配置是必须的，这指明了你要操作的 Kubernetes 集群地址以及访问方式。`kubeconfig` 文件如何生成，这里不过多介绍，具体可以详见 [Configure Access to Multiple Clusters](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/)
 
