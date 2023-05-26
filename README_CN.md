@@ -11,6 +11,13 @@ Helm3 摒弃了 Helm2 的 Tiller 架构，使用纯命令行的方式执行相�
 | kube_context | 支持指定kube_context来区分不同集群 |
 | kube_config | 支持指定kube_config来区分不同集群 |
 
+也可以使用如下 http headers 支持特定集群
+
+| Headers | Description |
+|:---| :--- |
+| X-KubeToken | 支持 `X-KubeToken` 头指定集群用户token  |
+| X-KubeApiServer  | 支持 `X-KubeApiServer` 头指定集群apiserver地址  |
+
 helm 原生命令行和相关 API 对应关系：
 
 + helm install
@@ -174,10 +181,26 @@ Body:
     - `GET`
     - `/api/repositories`
 
-
 + helm repo update
     - `PUT`
     - `/api/repositories`
+
++ helm repo add
+  - `POST`
+  - `/api/repositories`
+
+POST Body:
+
+``` json
+{
+    "name": "",    // `name`
+    "url": ""      // `url`
+}
+```
+
++ helm repo remove
+  - `DELETE`
+  - `/api/repositories/:name`
 
 + helm env
     - `GET`

@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/Masterminds/semver"
@@ -124,58 +124,63 @@ func initRepos(c *repo.Entry) error {
 	return nil
 }
 
-func updateChart(c *repo.Entry) error {
-	r, err := repo.NewChartRepository(c, getter.All(settings))
-	if err != nil {
-		return err
-	}
-	_, err = r.DownloadIndexFile()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func updateRepos(c *gin.Context) {
-	type errRepo struct {
-		Name string
-		Err  string
+	// reread config
+	_, err := readRepoConfig()
+	if err != nil {
+		respErr(c, fmt.Errorf("error: %v", err))
+		return
 	}
-	errRepoList := []errRepo{}
-
-	var wg sync.WaitGroup
-	for _, c := range helmConfig.HelmRepos {
-		wg.Add(1)
-		go func(c *repo.Entry) {
-			defer wg.Done()
-			err := updateChart(c)
-			if err != nil {
-				errRepoList = append(errRepoList, errRepo{
-					Name: c.Name,
-					Err:  err.Error(),
-				})
-			}
-		}(c)
-	}
-	wg.Wait()
-
-	if len(errRepoList) > 0 {
-		respErr(c, fmt.Errorf("error list: %v", errRepoList))
+	// rebuild repos
+	err = rebuildRepos()
+	if err != nil {
+		respErr(c, fmt.Errorf("error: %v", err))
 		return
 	}
 
 	respOK(c, nil)
 }
 
+func addRepo(c *gin.Context) {
+	var newRepo *repo.Entry
+	err := c.ShouldBindJSON(&newRepo)
+	if err != nil && err != io.EOF {
+		respErr(c, err)
+		return
+	}
+	err = writeRepoConfig(c.Request.Method, newRepo)
+	if err != nil && err != io.EOF {
+		respErr(c, err)
+		return
+	}
+	respOK(c, nil)
+}
+
+func deleteRepo(c *gin.Context) {
+	name := c.Param("name")
+	err := writeRepoConfig(c.Request.Method, &repo.Entry{
+		Name: name,
+	})
+	if err != nil && err != io.EOF {
+		respErr(c, err)
+		return
+	}
+	respOK(c, nil)
+}
+
 func listRepos(c *gin.Context) {
-	type repo struct {
+	type repp struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
 	}
-	repos := []repo{}
+	// read config
+	_, err := readRepoConfig()
+	if err != nil {
+		glog.Errorln(err)
+	}
+	repos := []repp{}
 	for _, r := range helmConfig.HelmRepos {
-		repos = append(repos, repo{
+		repos = append(repos, repp{
 			r.Name,
 			r.URL,
 		})

@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,7 +16,6 @@ import (
 	"github.com/spf13/pflag"
 	"helm.sh/helm/v3/pkg/cli"
 	"helm.sh/helm/v3/pkg/repo"
-	"sigs.k8s.io/yaml"
 )
 
 type HelmConfig struct {
@@ -50,11 +48,25 @@ func main() {
 	pflag.Parse()
 	defer glog.Flush()
 
-	configBody, err := ioutil.ReadFile(config)
+	// read config
+	_, err = readRepoConfig()
 	if err != nil {
 		glog.Fatalln(err)
 	}
-	err = yaml.Unmarshal(configBody, helmConfig)
+	// touch blank file
+	_, err = os.Stat(settings.RepositoryConfig)
+	if err != nil {
+		if os.IsNotExist(err) {
+			var f repo.File
+			if err := f.WriteFile(settings.RepositoryConfig, 0644); err != nil {
+				glog.Fatalln(err)
+			}
+		} else {
+			glog.Fatalln(err)
+		}
+	}
+	// init repos
+	err = rebuildRepos()
 	if err != nil {
 		glog.Fatalln(err)
 	}
@@ -75,14 +87,6 @@ func main() {
 				glog.Fatalln(err)
 			}
 		} else {
-			glog.Fatalln(err)
-		}
-	}
-
-	// init repo
-	for _, c := range helmConfig.HelmRepos {
-		err = initRepos(c)
-		if err != nil {
 			glog.Fatalln(err)
 		}
 	}

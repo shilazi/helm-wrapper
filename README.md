@@ -14,7 +14,12 @@ helm-wrapper is a helm3 HTTP wrapper with [helm Go SDK](https://helm.sh/docs/top
 | kube_context | Support distinguish multiple clusters by the`kube_context`  |
 | kube_config  | Support distinguish multiple clusters by the`kube_config`  |
 
+also can use the http headers below support specific cluster
 
+| Headers | Description |
+|:---| :--- |
+| X-KubeToken | Support specific cluster user token by the `X-KubeToken` header  |
+| X-KubeApiServer  | Support specific cluster apiserver by the `X-KubeApiServer` header  |
 
 + helm install
     - `POST`
@@ -179,6 +184,23 @@ Body:
 + helm repo update
     - `PUT`
     - `/api/repositories`
+
++ helm repo add
+    - `POST`
+    - `/api/repositories`
+
+POST Body: 
+
+``` json
+{
+    "name": "",    // `name`
+    "url": ""      // `url`
+}
+```
+
++ helm repo remove
+    - `DELETE`
+    - `/api/repositories/:name`
 
 + helm env
     - `GET`
